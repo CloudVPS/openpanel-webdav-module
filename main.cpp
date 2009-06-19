@@ -65,10 +65,10 @@ public:
 				if (node.ival() == port)
 				{
 					portfound = true;
+					++port;
 					break;
 				}
 			}
-			++port;
 		}
 		return port;
 	}
