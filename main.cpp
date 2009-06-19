@@ -158,7 +158,8 @@ public:
 			
 			f.puts ("  <Location />\n"
 					"    ProxyPass http://localhost:%i/\n"
-					"  </Location>\n" %format (port));
+					"  </Location>\n" 
+					"</VirtualHost>\n" %format (port));
 			
 			f.close ();
 		}
@@ -303,7 +304,7 @@ public:
 		}
 		
 		authd.deleteDir ("/var/webdav/%s" %format (id));
-		authd.deleteFile (CONFDIR "/%s" %format (id));
+		authd.deleteFile (CONFDIR "/%s.conf" %format (id));
 		authd.reloadService (SVCNAME);
 		return true;
 	}
