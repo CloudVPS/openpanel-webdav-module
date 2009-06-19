@@ -59,7 +59,7 @@ DAVDepthInfinity On
     DAV On
     AuthName "Webdisk at webdav.mallepiet.nl"
     AuthType Basic
-    AuthUserFile $homedir$/.webdav/webdav.passwd
+    AuthUserFile $docroot$/.webdav/webdav.passwd
     <Limit GET PUT POST DELETE PROPFIND PROPPATCH MKCOL COPY MOVE LOCK UNLOCK>
 	Require valid-user
     </Limit>
