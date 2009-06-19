@@ -182,6 +182,7 @@ public:
 			return false;
 		}
 		
+		authd.deleteDir ("/var/webdav/%s" %format (id));
 		return true;
 	}
 };
