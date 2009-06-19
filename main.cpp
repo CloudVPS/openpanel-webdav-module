@@ -104,7 +104,7 @@ public:
 		}
 		f.close ();
 		
-		string dpath = "web/%s/conf" %format (id);
+		string dpath = "sites/%s/conf" %format (id);
 		if (! authd.installUserFile ("webdav.passwd", dpath, owner))
 		{
 			error (CoreModule::E_OTHER, "Error installing webdav.passwd");
