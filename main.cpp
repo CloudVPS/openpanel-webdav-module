@@ -53,7 +53,7 @@ public:
 		
 		bool portfound = true;
 		
-		while (portfound = true)
+		while (portfound == true)
 		{
 			portfound = false;
 			foreach (node, conf)
