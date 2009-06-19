@@ -67,7 +67,7 @@ authd fileops
 								< group root
 								< perms 0644
 	
-	passwd						: /home/*/.webdav
+	webdav.passwd				: /home/*/.webdav
 								< perms 0640
 
 	.davlock					: /home/*/.webdav

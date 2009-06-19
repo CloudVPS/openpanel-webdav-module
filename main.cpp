@@ -7,6 +7,9 @@ class WebDAV : public CoreClass
 public:
 	WebDAV (void) : CoreClass ("Domain:WebDAV")
 	{
+		// We're using allchildren=true because we want to write the
+		// webdav htpasswd file in one go. So we'll swallow requests
+		// for WebDAV:User from this class.
 		alias ("WebDAV:User");
 	}
 	
@@ -23,6 +26,7 @@ public:
 		{
 			value splt = strutil::splitspace (line);
 			if (splt.count() != 2) continue;
+			if (splt[0] == 0) continue;
 			res[splt[1].sval()] = splt[0].ival();
 		}
 		

@@ -43,49 +43,52 @@ stopone() {
 }
 
 stopall() {
-  action="stopone"
-  if [ "$1" = "restart" ]; then
-    action="restartone"
-  fi
   grep "^[1-9]" < /etc/webdav/shares.conf | while read port vhost; do
     if checkrunning "$vhost"; then
       echo -n "    ${vhost}..."
-      naction="$action"
+	  if stopone "$vhost"; then
+	    echo " STOPPED"
+	  else
+	    echo " FAIL"
+	  fi
+	fi
+  done
+}
+
+restartall() {
+  grep "^[0-9]" < /etc/webdav/shares.conf | while read port vhost; do
+    echo "$port $vhost"
+    if checkrunning "$vhost"; then
+      echo -n "    ${vhost}:${port}..."
       if [ "$port" = "0" ]; then
-        naction="stopone"
-      fi
-      if $naction "$vhost"; then
-        echo " RUNS"
+        if stopone "$vhost" ]; then
+          echo " STOPPED"
+        else
+          echo " FAIL"
+        fi
       else
-        echo " FAIL"
-      fi
-    elif [ "$action" = "restartone" ]; then
-      echo -n "    ${vhost}..."
-      if startone "$vhost"; then
-        echo " OK"
-      else
-        echo "FAIL"
+        if restartone "$vhost"; then
+          echo " RESTARTED"
+        else
+          echo " FAIL"
+        fi
       fi
     fi
   done
 }
 
+
 startall() {
-  action="startone"
   grep "^[1-9]" < /etc/webdav/shares.conf | while read port vhost; do
     checkrunning "$vhost" || {
       echo -n "    ${vhost}..."
-      if $action "$vhost"; then
-        echo " OK"
+      if startone "$vhost"; then
+        echo " STARTED"
       else
         echo " FAIL"
       fi
     }
   done
-}
-
-restartall() {
-  stopall restart
 }
 
 DAEMON=/usr/sbin/httpd
