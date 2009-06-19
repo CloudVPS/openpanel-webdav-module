@@ -34,6 +34,7 @@ class Domain:WebDAV				< uuid 1c95809a-96eb-4f82-baea-e6e380ea86e1
 	string id					: Hostname part of the site url
 								< gridwidth 40
 
+# ----------------------------------------------------------------------------
 class WebDAV:User				< uuid 30862d64-2f04-44e8-bb1f-00cf80aa3b4e
 								< version 1
 								< requires Domain:WebDAV
@@ -62,6 +63,11 @@ authd fileops
 								< group root
 								< perms 0644
 	
+	*.conf						: /etc/%%SERVICENAME%%/openpanel.d
+								< user root
+								< group root
+								< perms 0644
+	
 	shares.conf					: /etc/webdav
 								< user root
 								< group root
@@ -73,5 +79,16 @@ authd fileops
 	.davlock					: /home/*/sites/*/var
 								< perms 0640
 
+# ----------------------------------------------------------------------------
 authd services
 	service webdav
+	service %%SERVICENAME%%
+
+# ============================================================================
+# DISTRO MACROS
+# ============================================================================
+distro redhat
+	macro SERVICENAME			: httpd
+	
+distro debian
+	macro SERVICENAME			: apache2
