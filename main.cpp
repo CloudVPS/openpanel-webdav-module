@@ -82,7 +82,10 @@ public:
 			if (! authd.makeDir ("/var/webdav/%s/logs" %format (vhost))) return false;
 			if (! authd.makeDir ("/var/webdav/%s/run" %format (vhost))) return false;
 		}
-		authd.makeUserDir (user, "0700", ".webdav");
+		authd.makeUserDir (user, "0750", "www/%s" %format (vhost));
+		authd.makeUserDir (user, "0700", "www/%s/conf" %format (vhost));
+		authd.makeUserDir (user, "0700", "www/%s/var" %format (vhost));
+		authd.makeUserDir (user, "0750", "www/%s/data" %format (vhost));
 		return true;
 	}
 	
@@ -99,7 +102,8 @@ public:
 		}
 		f.close ();
 		
-		if (! authd.installUserFile ("webdav.passwd",".webdav", owner))
+		string dpath = "www/%s/conf" %format (id);
+		if (! authd.installUserFile ("webdav.passwd", dpath, owner))
 		{
 			error (CoreModule::E_OTHER, "Error installing webdav.passwd");
 		}
@@ -128,7 +132,7 @@ public:
 		}
 		
 		string group = gr["groupname"];
-		string docroot = pw["home"];
+		string docroot = "%s/www/%s" %format (pw["home"],id);
 		
 		value conf = loadconf();
 		int port = findport (conf);

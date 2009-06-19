@@ -67,10 +67,10 @@ authd fileops
 								< group root
 								< perms 0644
 	
-	webdav.passwd				: /home/*/.webdav
+	webdav.passwd				: /home/*/www/*/conf
 								< perms 0640
 
-	.davlock					: /home/*/.webdav
+	.davlock					: /home/*/www/*/var
 								< perms 0640
 
 authd services

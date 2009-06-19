@@ -32,7 +32,7 @@ User $user$
 Group $group$
 ServerAdmin root@localhost
 UseCanonicalName Off
-DocumentRoot "$docroot$"
+DocumentRoot "$docroot$/data"
 
 BrowserMatch "Microsoft Data Access Internet Publishing Provider" redirect-carefully
 BrowserMatch "Microsoft-WebDAV-MiniRedir/5.1.2600" redirect-carefully
@@ -43,7 +43,7 @@ BrowserMatch "^gnome-vfs/1.0" redirect-carefully
 BrowserMatch "^XML Spy" redirect-carefully
 BrowserMatch "^Dreamweaver-WebDAV-SCM1" redirect-carefully
 
-DAVLockDB $homedir$/.webdav/lockdb
+DAVLockDB $docroot$/var/lockdb
 DAVMinTimeout 600
 DAVDepthInfinity On
 
@@ -59,7 +59,7 @@ DAVDepthInfinity On
     DAV On
     AuthName "Webdisk at webdav.mallepiet.nl"
     AuthType Basic
-    AuthUserFile $docroot$/.webdav/webdav.passwd
+    AuthUserFile $docroot$/conf/webdav.passwd
     <Limit GET PUT POST DELETE PROPFIND PROPPATCH MKCOL COPY MOVE LOCK UNLOCK>
 	Require valid-user
     </Limit>
