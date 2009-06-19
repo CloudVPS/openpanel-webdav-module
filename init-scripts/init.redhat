@@ -1,0 +1,124 @@
+#!/bin/sh
+#
+# Init file for starting apache processes serving webdav data (webdav)
+#
+# chkconfig: 2345 86 14
+# description: WebDAV user processes
+#
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+[ -r /etc/sysconfig/network ] && . /etc/sysconfig/network
+
+RETVAL=0
+prog="webdav"
+
+[ "${NETWORKING}" = "no" ] && exit 1
+
+checkrunning() {
+  vhost="$1"
+  if [ ! -f "/var/webdav/$vhost/run/httpd-webdav.pid" ]; then
+    return 1
+  fi
+  pid=$(cat "/var/webdav/$vhost/run/httpd-webdav.pid")
+  kill -0 "$pid" >/dev/null 2>&1 || return 1
+  return 0
+}
+
+startone() {
+  vhost="$1"
+  /usr/sbin/httpd -d "/var/webdav/$vhost" || return 1
+}
+
+restartone() {
+  vhost="$1"
+  /usr/sbin/apachectl -d "/var/webdav/$vhost" -k restart || return 1
+}
+
+stopone() {
+  vhost="$1"
+  /usr/sbin/apachectl -d "/var/webdav/$vhost" -k stop
+}
+
+stopall() {
+  action="stopone"
+  if [ "$1" = "restart" ]; then
+    action="restartone"
+  fi
+  grep "^[1-9]" < /etc/webdav/shares.conf | while read port vhost; do
+    if checkrunning "$vhost"; then
+      echo -n "    ${vhost}..."
+      naction="$action"
+      if [ "$port" = "0" ]; then
+        naction="stopone"
+      fi
+      if $naction "$vhost"; then
+        echo " OK"
+      else
+        echo " FAIL"
+      fi
+    elif [ "$action" = "restartone" ]; then
+      if startone "$vhost"; then
+        echo " OK"
+      else
+        echo "FAIL"
+      fi
+    fi
+  done
+}
+
+startall() {
+  action="startone"
+  grep "^[1-9]" < /etc/webdav/shares.conf | while read port vhost; do
+    checkrunning "$vhost" || {
+      echo -n "    ${vhost}..."
+      if $action "$vhost"; then
+        echo " OK"
+      else
+        echo " FAIL"
+      fi
+    }
+  done
+}
+
+restartall() {
+  stopall restart
+}
+
+DAEMON=/usr/sbin/httpd
+
+test -x $DAEMON || exit 0
+
+start() {
+	echo "Starting WebDAV services"
+	startall
+}
+
+stop() {
+	echo "Stopping WebDAV services"
+	stopall
+}
+
+restart() {
+	echo "Reloading WebDAV services"
+	restartall
+}
+
+# See how we were called.
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        restart)
+                restart
+                ;;
+        *)
+                        echo $"Usage: $0 {start|stop|restart}"
+                        exit 1
+esac
+exit $?

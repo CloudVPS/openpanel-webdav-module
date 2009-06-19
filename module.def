@@ -1,0 +1,69 @@
+# ============================================================================
+# OpenPanel WebDAV.module for hosting a share under a user account
+# Copyright (C) 2009 PanelSix V.O.F.
+# ============================================================================
+module WebDAV					< uuid 60a2afa9-1d86-4293-a3a7-7bceed138e93
+								< version 1.0
+								< languages en_EN
+								< apitype xml
+								< requires Apache2.module
+								< license GPL2
+								< author OpenPanel V.O.F.
+								< url http://www.openpanel.com/
+								
+# ============================================================================
+# CLASSES
+# ============================================================================
+class Domain:WebDAV				< uuid 1c95809a-96eb-4f82-baea-e6e380ea86e1
+								< version 1
+								< requires Domain
+								< indexing manual
+								< parentrealm domainsuffix
+								< uniquein parent
+								< shortname webdav
+								< title WebDAV share
+								< description WebDAV share
+								< allchildren true
+								
+								< capabilities create delete update
+								
+								< metatype derived
+								< metabase Meta:Website
+								< metadescription home
+								
+	string id					: Hostname part of the site url
+								< gridwidth 40
+
+class WebDAV:user				< uuid 30862d64-2f04-44e8-bb1f-00cf80aa3b4e
+								< version 1
+								< requires Domain:WebDAV
+								< indexing manual
+								< uniquein parent
+								< shortname user
+								< title WebDAV User
+								< description WebDAV User
+								
+								< capabilities create delete update
+								
+	string id					: Username
+	
+	password password			: Password
+								< crypt md5
+								< gridhide
+								< clihide
+								
+							
+# ============================================================================
+# AUTHD
+# ============================================================================
+authd fileops
+	httpd.conf					: /var/webdav/*
+								< user root
+								< group root
+								< perms 0644
+	
+	passwd						: /home/*/.webdav
+								< perms 0640
+
+	.davlock					: /home/*/.webdav
+								< perms 0640

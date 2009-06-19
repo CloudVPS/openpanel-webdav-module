@@ -1,0 +1,76 @@
+ServerRoot "/var/webdav/$vhost$"
+PidFile run/httpd-webdav.pid
+Timeout 60
+KeepAlive on
+MaxKeepAliveRequests 100
+KeepAliveTimeout 20
+<IfModule prefork.c>
+StartServers       2
+MinSpareServers    1
+MaxSpareServers    2
+ServerLimit        6
+MaxClients 6
+MaxRequestsPerChild 256
+</IfModule>
+
+Listen $port$
+LoadModule access_module /usr/lib/httpd/modules/mod_access.so
+LoadModule auth_module /usr/lib/httpd/modules/mod_auth.so
+LoadModule auth_anon_module /usr/lib/httpd/modules/mod_auth_anon.so
+LoadModule log_config_module /usr/lib/httpd/modules/mod_log_config.so
+LoadModule env_module /usr/lib/httpd/modules/mod_env.so
+LoadModule cern_meta_module /usr/lib/httpd/modules/mod_cern_meta.so
+LoadModule expires_module /usr/lib/httpd/modules/mod_expires.so
+LoadModule headers_module /usr/lib/httpd/modules/mod_headers.so
+LoadModule mime_module /usr/lib/httpd/modules/mod_mime.so
+LoadModule dav_module /usr/lib/httpd/modules/mod_dav.so
+LoadModule dav_fs_module /usr/lib/httpd/modules/mod_dav_fs.so
+LoadModule dir_module /usr/lib/httpd/modules/mod_dir.so
+LoadModule setenvif_module /usr/lib/httpd/modules/mod_setenvif.so
+
+User $user$
+Group $group$
+ServerAdmin root@localhost
+UseCanonicalName Off
+DocumentRoot "$docroot$"
+
+BrowserMatch "Microsoft Data Access Internet Publishing Provider" redirect-carefully
+BrowserMatch "Microsoft-WebDAV-MiniRedir/5.1.2600" redirect-carefully
+BrowserMatch "MS FrontPage" redirect-carefully
+BrowserMatch "^WebDrive" redirect-carefully
+BrowserMatch "^WebDAVFS/1.[0123]" redirect-carefully
+BrowserMatch "^gnome-vfs/1.0" redirect-carefully
+BrowserMatch "^XML Spy" redirect-carefully
+BrowserMatch "^Dreamweaver-WebDAV-SCM1" redirect-carefully
+
+DAVLockDB $homedir$/.webdav/lockdb
+DAVMinTimeout 600
+DAVDepthInfinity On
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+</Directory>
+
+<Directory "$docroot$">
+    Order Allow,Deny
+    Allow from all
+
+    DAV On
+    AuthName "Webdisk at webdav.mallepiet.nl"
+    AuthType Basic
+    AuthUserFile $homedir$/.webdav/webdav.passwd
+    <Limit GET PUT POST DELETE PROPFIND PROPPATCH MKCOL COPY MOVE LOCK UNLOCK>
+	Require valid-user
+    </Limit>
+</Directory>
+
+TypesConfig /etc/mime.types
+DefaultType text/plain
+
+HostnameLookups Off
+EnableSendfile on
+ErrorLog logs/error_log
+LogLevel warn
+ServerSignature Off
+AddDefaultCharset UTF-8
