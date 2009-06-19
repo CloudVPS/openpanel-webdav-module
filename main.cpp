@@ -76,6 +76,7 @@ public:
 			if (! authd.makeDir ("/var/webdav/%s" %format (vhost))) return false;
 			if (! authd.makeDir ("/var/webdav/%s/conf" %format (vhost))) return false;
 			if (! authd.makeDir ("/var/webdav/%s/logs" %format (vhost))) return false;
+			if (! authd.makeDir ("/var/webdav/%s/run" %format (vhost))) return false;
 		}
 		authd.makeUserDir (user, "0700", ".webdav");
 		return true;

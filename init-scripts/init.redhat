@@ -55,11 +55,12 @@ stopall() {
         naction="stopone"
       fi
       if $naction "$vhost"; then
-        echo " OK"
+        echo " RUNS"
       else
         echo " FAIL"
       fi
     elif [ "$action" = "restartone" ]; then
+      echo -n "    ${vhost}..."
       if startone "$vhost"; then
         echo " OK"
       else
@@ -117,6 +118,9 @@ case "$1" in
         restart)
                 restart
                 ;;
+        reload)
+        		restart
+        		;;
         *)
                         echo $"Usage: $0 {start|stop|restart}"
                         exit 1
