@@ -95,8 +95,8 @@ public:
 	{
 		const value &list = listChildren ("WebDAV:User");
 		string owner = param("owner");
-		file f ("webdav.passwd");
-		
+		file f (">webdav.passwd");
+
 		foreach (user, list)
 		{
 			f.writeln ("%s:%s" %format (user["metaid"],user["password"]));
