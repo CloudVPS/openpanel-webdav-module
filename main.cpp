@@ -17,7 +17,7 @@ public:
 	{
 	}
 	
-	value *loadconf (void)
+	value *loadConf (void)
 	{
 		returnclass (value) res retain;
 		string raw = fs.load ("/etc/webdav/shares.conf");
@@ -33,7 +33,7 @@ public:
 		return &res;
 	}
 	
-	bool saveconf (value &conf)
+	bool saveConf (value &conf)
 	{
 		file f;
 		if (! f.openwrite ("shares.conf")) return false;
@@ -51,7 +51,7 @@ public:
 		return true;
 	}
 	
-	int findport (const value &conf)
+	int findPort (const value &conf)
 	{
 		int port = 800;
 		
@@ -73,7 +73,7 @@ public:
 		return port;
 	}
 	
-	bool createdirs (const string &vhost, const string &user)
+	bool createDirs (const string &vhost, const string &user)
 	{
 		if (! fs.exists ("/var/webdav/%s" %format (vhost)))
 		{
@@ -91,13 +91,12 @@ public:
 		return true;
 	}
 	
-	bool update (const value &env)
+	bool update (void)
 	{
-		const value &list = env["Domain:WebDAV"]["WebDAV:User"];
-		string owner = env["Domain:WebDAV"]("owner");
-		file f;
+		const value &list = listChildren ("WebDAV:User");
+		string owner = param("owner");
+		file f ("webdav.passwd");
 		
-		f.openwrite ("webdav.passwd");
 		foreach (user, list)
 		{
 			f.writeln ("%s:%s" %format (user["metaid"],user["password"]));
@@ -108,15 +107,16 @@ public:
 		if (! authd.installUserFile ("webdav.passwd", dpath, owner))
 		{
 			error (CoreModule::E_OTHER, "Error installing webdav.passwd");
+			return false;
 		}
 		return true;
 	}
 	
-	bool create (const value &env)
+	bool create (void)
 	{
-		if (env["OpenCORE:Session"]["classid"] == "WebDAV:User")
+		if (requestedClass == "WebDAV:User")
 		{
-			return update (env);
+			return update();
 		}
 		string tmpl = fs.load ("/etc/webdav/template.conf");
 		string owner = env["Domain:WebDAV"]("owner");
@@ -137,10 +137,10 @@ public:
 		string group = gr["groupname"];
 		string docroot = "%s/sites/%s" %format (pw["home"],id);
 		
-		value conf = loadconf();
-		int port = findport (conf);
+		value conf = loadConf();
+		int port = findPort (conf);
 		conf[id] = port;
-		if (! saveconf (conf)) return false;
+		if (! saveConf (conf)) return false;
 		
 		value senv = $("user",owner)->
 					 $("group",group)->
@@ -151,7 +151,7 @@ public:
 		tmpl = strutil::valueparse (tmpl, senv);
 		fs.save ("httpd.conf", tmpl);
 		
-		if (! createdirs(id,owner))
+		if (! createDirs(id,owner))
 		{
 			error (CoreModule::E_OTHER, "Could not create dirs");
 			return false;
@@ -172,16 +172,16 @@ public:
 		return true;
 	}
 	
-	bool remove (const value &env)
+	bool remove (void)
 	{
-		if (env["OpenCORE:Session"]["classid"] == "WebDAV:User")
+		if (requestedClass == "WebDAV:User")
 		{
-			return update (env);
+			return update();
 		}
 		
-		value conf = loadconf();
+		value conf = loadConf();
 		conf[id] = 0;
-		if (! saveconf (conf)) return false;
+		if (! saveConf (conf)) return false;
 		
 		if (! authd.reloadService ("webdav"))
 		{
