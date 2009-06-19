@@ -82,6 +82,8 @@ public:
 			if (! authd.makeDir ("/var/webdav/%s/logs" %format (vhost))) return false;
 			if (! authd.makeDir ("/var/webdav/%s/run" %format (vhost))) return false;
 		}
+		
+		authd.makeUserDir (user, "0711", "www");
 		authd.makeUserDir (user, "0750", "www/%s" %format (vhost));
 		authd.makeUserDir (user, "0700", "www/%s/conf" %format (vhost));
 		authd.makeUserDir (user, "0700", "www/%s/var" %format (vhost));
