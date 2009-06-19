@@ -72,3 +72,6 @@ authd fileops
 
 	.davlock					: /home/*/.webdav
 								< perms 0640
+
+authd services
+	service webdav
