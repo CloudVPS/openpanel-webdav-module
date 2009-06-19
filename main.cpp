@@ -109,6 +109,7 @@ public:
 		{
 			error (CoreModule::E_OTHER, "Error installing webdav.passwd");
 		}
+		return true;
 	}
 	
 	bool create (const value &env)
