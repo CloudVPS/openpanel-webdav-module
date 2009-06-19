@@ -57,7 +57,6 @@ stopall() {
 
 restartall() {
   grep "^[0-9]" < /etc/webdav/shares.conf | while read port vhost; do
-    echo "$port $vhost"
     if checkrunning "$vhost"; then
       echo -n "    ${vhost}:${port}..."
       if [ "$port" = "0" ]; then
@@ -69,6 +68,15 @@ restartall() {
       else
         if restartone "$vhost"; then
           echo " RESTARTED"
+        else
+          echo " FAIL"
+        fi
+      fi
+    else
+      if [ ! "$port" = "0" ]; then
+        echo -n "    ${vhost}:${port}..."
+        if startone "$vhost"; then
+          echo " STARTED"
         else
           echo " FAIL"
         fi
