@@ -1,6 +1,7 @@
 cxx
 grace
 pthread
+unixflavor
 libsocket
 libdl
 libcrypt

@@ -456,6 +456,47 @@ fi
 
 rm -f conftest conftest.o conftest.c
 # ---------------------------------------------------------------------------
+# Figure out what flavor of Unix we're dealing with
+# ---------------------------------------------------------------------------
+
+MAJOR=`uname`
+
+saypending "checking your unix flavor"
+
+if [ "$MAJOR" = "Darwin" ]; then
+  UNIXFLAVORDEFINE="-D__FLAVOR_DARWIN"
+  REPORT="Darwin"
+  if [ -e /Library/QuickTime ]; then
+    UNIXFLAVORDEFINE="-D__FLAVOR_DARWIN -D__FLAVOR_MACOSX"
+    REPORT="Mac OS X"
+  fi
+else
+  if [ -f /etc/redhat-release ]; then
+    UNIXFLAVORDEFINE="-D__FLAVOR_LINUX_REDHAT"
+    REPORT="RedHat Linux"
+    if [ -f /usr/bin/yum ]; then
+      UNIXFLAVORDEFINE="-D__FLAVOR_LINUX_REDHAT -D__FLAVOR_LINUX_REDHAT_YUM"
+      REPORT="RedHat Linux (with yum)"
+    elif [ -f /usr/bin/up2date ]; then
+      UNIXFLAVORDEFINE="-D__FLAVOR_LINUX_REDHAT -D__FLAVOR_LINUX_REDHAT_UP2DATE"
+      REPORT="RedHat Linux (with up2date)"
+    fi
+  elif [ -f /etc/debian-version ]; then
+    UNIXFLAVORDEFINE="-D__FLAVOR_LINUX_DEBIAN"
+    REPORT="Debian GNU/Linux"
+  elif [ -f /etc/debian_version ]; then
+    UNIXFLAVORDEFINE="-D__FLAVOR_LINUX_DEBIAN"
+    REPORT="Debian GNU/Linux"
+  elif [ -d /etc/init.d ]; then
+    UNIXFLAVORDEFINE="-D__FLAVOR_UNIX_SYSV"
+    REPORT="Generic System V"
+  else
+    UNIXFLAVORDEFINE=""
+    REPORT="Unknown"
+  fi
+fi
+saypass "$REPORT"
+# ---------------------------------------------------------------------------
 # Figure out whether we need libsocket
 # ---------------------------------------------------------------------------
 
@@ -700,7 +741,7 @@ cat >makeinclude <<EOF
 COMPILER = $COMPILER
 COMPILERFLAGS = $COMPILERFLAGS
 CXX = $CXX
-CXXFLAGS = $CXXFLAGS
+CXXFLAGS = $CXXFLAGS $UNIXFLAVORDEFINE
 DYNEXT = $DYNEXT
 INCLUDES = -I$GRACEINC
 LD = $LD
