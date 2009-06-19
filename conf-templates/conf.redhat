@@ -52,7 +52,7 @@ DAVDepthInfinity On
     AllowOverride None
 </Directory>
 
-<Directory "$docroot$">
+<Directory "$docroot$/data">
     Order Allow,Deny
     Allow from all
 
