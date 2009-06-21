@@ -33,6 +33,7 @@ class Domain:WebDAV				< uuid 1c95809a-96eb-4f82-baea-e6e380ea86e1
 								
 	string id					: Hostname part of the site url
 								< gridwidth 40
+								< gridlabel Hostname
 
 # ----------------------------------------------------------------------------
 class WebDAV:User				< uuid 30862d64-2f04-44e8-bb1f-00cf80aa3b4e
